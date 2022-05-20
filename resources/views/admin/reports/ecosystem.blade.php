@@ -235,7 +235,18 @@ d3.select("#graph").graphviz()
     .renderDot("digraph  {\
         @can('entity_show')\
             @foreach($entities as $entity) \
+                @if ($entity->destinationRelations()->filter(function($item){return $item->is_hierarchical})-> count >0)
+                subgraph E{{ $entity->id }} {
+                   @foreach($entity->destinationRelations()->destination() as $subentity) 
+                       
+                E{{ $subentity->id }} [label=\"{{ $entity->subname }}\" shape=none labelloc=\"b\"  width=1 height=1.1 image=\"/images/entity.png\" href=\"#ENTITY{{$subentity->id}}\"]\
+                   @endforeach
+                   label=\"{{ $entity->name }}\" shape=none labelloc=\"b\"  width=1 height=1.1 image=\"/images/entity.png\" href=\"#ENTITY{{$entity->id}}\"
+                }
+                @else 
                 E{{ $entity->id }} [label=\"{{ $entity->name }}\" shape=none labelloc=\"b\"  width=1 height=1.1 image=\"/images/entity.png\" href=\"#ENTITY{{$entity->id}}\"]\
+                
+                @endif
             @endforEach\
         @endcan\
         @can('relation_show')\
